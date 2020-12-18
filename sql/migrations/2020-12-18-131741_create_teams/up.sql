@@ -1,0 +1,6 @@
+CREATE TABLE teams (
+  id VARCHAR(3) PRIMARY KEY,
+  league VARCHAR(1) NOT NULL,
+  city TEXT NOT NULL,
+  name TEXT NOT NULL
+);

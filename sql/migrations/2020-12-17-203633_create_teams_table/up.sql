@@ -1,4 +1,0 @@
-CREATE TABLE teams (
-  id VARCHAR(3) PRIMARY KEY,
-  name TEXT NOT NULL
-);

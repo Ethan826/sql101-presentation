@@ -1,4 +1,0 @@
-CREATE TABLE races (
-  id INTEGER PRIMARY KEY,
-  name TEXT NOT NULL
-);
