@@ -1,0 +1,4 @@
+CREATE TABLE nations (
+  id VARCHAR(3) NOT NULL PRIMARY KEY,
+  name TEXT NOT NULL
+);
