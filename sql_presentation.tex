@@ -1,7 +1,7 @@
-\documentclass{beamer}
+\documentclass[aspectratio=169]{beamer}
 
 \usepackage[utf8]{inputenc}
-\usepackage{booktabs,geometry,microtype,xcolor,listings}
+\usepackage{booktabs,geometry,microtype,xcolor,listings,graphicx}
 
 \lstset{basicstyle=\footnotesize}
 
@@ -745,5 +745,122 @@ INSERT INTO desserts (dessert_name, dessert_type_id) VALUES
 \begin{frame}[fragile]
   \frametitle{Not very DRY. How about a CTE?}
   Not with MySQL though.
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Okay but we're getting ahead of ourselves!}
+
+  We're doing CTEs and we haven't even done queries. What is wrong with you?
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Okay but we're getting ahead of ourselves!}
+
+  There's a bootstrapping issue: we need a database to do some database
+  stuff. It's like languages where doing ``Hello world'' is
+  hard.\footnote{I'm looking at you Haskell.}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Baseball example}
+
+  For our German friends, baseball is an American sport that's a bit like
+  cricket, though actually comprehensible. There are 30 teams divided into
+  two leagues,\footnote{Technically, only one of the leagues plays baseball;
+    the other plays a game that appears on the surface like baseball but that
+    is not actually baseball, as it involves the Designated Hitter rule.} and
+    each team plays 162 games per year. Because of the number of games and
+    long history, baseball is big among statisticians.
+  \begin{center}
+    \includegraphics[width=0.5\textheight]{Pato.jpg}
+  \end{center}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Baseball example}
+
+  I have a rudimentary database of 2016 MLB info: just games, teams, and
+  players. Let's figure out the following:
+
+  \begin{enumerate}
+    \item What player has the id 'dillp101'?\label{pickles}
+    \item How many teams were there in 2016?\label{num_teams}
+    \item How many players played in 2016?\label{num_players}
+    \item How many games did Anthony Rizzo play in 2016?\label{rizzo}
+    \item What is the commonest first name in MLB history?\label{common}
+    \item Who played the highest percentage of night games in 2016?\label{night}
+    \item What player played for the most teams (choose only one if it's a
+    tie), and what teams were they?\label{most_teams}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Baseball example, answer \ref{pickles}}
+  \begin{lstlisting}
+SELECT * FROM players WHERE id = 'dillp101';
+  \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Baseball example, answer \ref{num_teams}}
+  \begin{lstlisting}
+SELECT COUNT(*) FROM teams;
+  \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Baseball example, answer \ref{num_players}}
+  \begin{lstlisting}
+SELECT COUNT(DISTINCT player_id) FROM players_teams;
+  \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Baseball example, answer \ref{rizzo}}
+  \begin{lstlisting}
+SELECT COUNT(pg.game_id)
+FROM players player
+INNER JOIN players_games pg
+        ON player.id = pg.player_id
+WHERE first = 'Anthony'
+  AND last = 'Rizzo';
+  \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Baseball example, answer \ref{common}}
+  \begin{lstlisting}
+SELECT COUNT(first), first
+FROM players
+GROUP BY first
+ORDER BY 1 DESC
+LIMIT 1;
+  \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Baseball example, answer \ref{most_teams}}
+  \begin{lstlisting}
+SELECT sub.first AS "First Name",
+       sub.last AS "Last Name",
+       team.name AS "Team Name"
+FROM (
+  SELECT player.id,
+         player.first,
+         player.last,
+         COUNT(pt.team_id)
+  FROM players player
+  INNER JOIN players_teams pt
+          ON pt.player_id = player.id
+  GROUP BY player.id
+  ORDER BY 4 DESC
+  LIMIT 1
+) sub
+INNER JOIN players_teams pt
+        ON pt.player_id = sub.id
+INNER JOIN teams team
+        ON team.id = pt.team_id;
+  \end{lstlisting}
 \end{frame}
 \end{document}
