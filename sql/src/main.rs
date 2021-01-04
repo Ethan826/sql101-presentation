@@ -128,12 +128,18 @@ fn insert_players_games_entry(
 ) -> Result<(), Box<dyn Error>> {
     println!("Inserting {:?}", &record);
 
-    diesel::insert_into(players_games::table)
+    let result = diesel::insert_into(players_games::table)
         .values(record)
         .on_conflict_do_nothing()
-        .execute(conn)?;
+        .execute(conn);
 
-    Ok(())
+    match result {
+        Err(e) => {
+            dbg!(e);
+            Ok(())
+        }
+        Ok(_) => Ok(())
+    }
 }
 
 fn insert_games(conn: &PgConnection) -> Result<(), Box<dyn Error>> {
