@@ -45,14 +45,9 @@ table! {
     }
 }
 
+joinable!(players_games -> games (game_id));
 joinable!(players_games -> players (player_id));
 joinable!(players_teams -> players (player_id));
 joinable!(players_teams -> teams (team_id));
 
-allow_tables_to_appear_in_same_query!(
-    games,
-    players,
-    players_games,
-    players_teams,
-    teams,
-);
+allow_tables_to_appear_in_same_query!(games, players, players_games, players_teams, teams,);

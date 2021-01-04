@@ -769,8 +769,8 @@ INSERT INTO desserts (dessert_name, dessert_type_id) VALUES
   two leagues,\footnote{Technically, only one of the leagues plays baseball;
     the other plays a game that appears on the surface like baseball but that
     is not actually baseball, as it involves the Designated Hitter rule.} and
-    each team plays 162 games per year. Because of the number of games and
-    long history, baseball is big among statisticians.
+  each team plays 162 games per year. Because of the number of games and
+  long history, baseball is big among statisticians.
   \begin{center}
     \includegraphics[width=0.5\textheight]{Pato.jpg}
   \end{center}
@@ -789,9 +789,10 @@ INSERT INTO desserts (dessert_name, dessert_type_id) VALUES
     \item How many players played in 2016?\label{num_players}
     \item How many games did Anthony Rizzo play in 2016?\label{rizzo}
     \item What is the commonest first name in MLB history?\label{common}
-    \item Who played the highest percentage of night games in 2016?\label{night}
     \item What player played for the most teams (choose only one if it's a
-    tie), and what teams were they?\label{most_teams}
+          tie), and what teams were they?\label{most_teams}
+    \item From those players who played at least 10 total games in 2016, what
+          player played the highest percentage of night games?\label{night}
   \end{enumerate}
 \end{frame}
 
@@ -861,6 +862,30 @@ INNER JOIN players_teams pt
         ON pt.player_id = sub.id
 INNER JOIN teams team
         ON team.id = pt.team_id;
+  \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Baseball example, answer \ref{night}}
+  \begin{lstlisting}
+SELECT player.first,
+       player.last,
+       CAST(night_games.tally AS FLOAT) / total_games.tally AS "Percent"
+FROM ( SELECT pg.player_id, COUNT(pg.player_id) AS tally
+       FROM players_games pg
+       INNER JOIN games game ON game.id = pg.game_id
+       WHERE game.day_night = 'N'
+       GROUP BY pg.player_id
+) as night_games INNER JOIN (
+       SELECT pg.player_id, COUNT(pg.player_id) AS tally
+       FROM players_games pg
+       INNER JOIN games game ON game.id = pg.game_id
+       GROUP BY pg.player_id
+) AS total_games ON night_games.player_id = total_games.player_id
+INNER JOIN players player ON player.id = total_games.player_id
+WHERE total_games.tally >= 10
+ORDER BY "Percent" DESC
+LIMIT 1;
   \end{lstlisting}
 \end{frame}
 \end{document}

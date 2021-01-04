@@ -1,5 +1,5 @@
 CREATE TABLE games (
-    id VARCHAR(7) PRIMARY KEY NOT NULL,
+    id VARCHAR(12) PRIMARY KEY NOT NULL,
     date TEXT NOT NULL,
     game_number TEXT NOT NULL,
     day_of_week TEXT NOT NULL,
