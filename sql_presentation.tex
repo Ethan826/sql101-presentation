@@ -858,8 +858,8 @@ SELECT p.first, p.last, t.name
 FROM players_teams pt
 INNER JOIN teams t
         ON pt.team_id = t.id
-FULL OUTER JOIN players p
-             ON pt.player_id = p.id;
+RIGHT OUTER JOIN players p
+              ON pt.player_id = p.id;
   \end{lstlisting}
 \end{frame}
 
@@ -873,12 +873,12 @@ FROM (
   SELECT player.id,
          player.first,
          player.last,
-         COUNT(pt.team_id)
+         COUNT(pt.team_id) AS tally
   FROM players player
   INNER JOIN players_teams pt
           ON pt.player_id = player.id
   GROUP BY player.id
-  ORDER BY 4 DESC
+  ORDER BY tally DESC
   LIMIT 1
 ) sub
 INNER JOIN players_teams pt
@@ -899,7 +899,7 @@ FROM ( SELECT pg.player_id, COUNT(pg.player_id) AS tally
        INNER JOIN games game ON game.id = pg.game_id
        WHERE game.day_night = 'N'
        GROUP BY pg.player_id
-) as night_games INNER JOIN (
+) AS night_games INNER JOIN (
        SELECT pg.player_id, COUNT(pg.player_id) AS tally
        FROM players_games pg
        INNER JOIN games game ON game.id = pg.game_id
