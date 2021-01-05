@@ -1,9 +1,10 @@
 \documentclass[aspectratio=169]{beamer}
 
 \usepackage[utf8]{inputenc}
-\usepackage{booktabs,geometry,microtype,xcolor,listings,graphicx}
+\usepackage{booktabs,geometry,microtype,xcolor,listings,graphicx,textcomp}
+\usepackage[T1]{fontenc}
 
-\lstset{basicstyle=\footnotesize}
+\lstset{basicstyle=\footnotesize,upquote=true}
 
 \title{SQL 101}
 \author{Ethan Kent}
@@ -355,7 +356,7 @@
   \begin{columns}[T]
     \begin{column}{0.3\textwidth}
       \begin{table}[]
-        \footnotesize
+        \tiny
         \begin{tabular}{@{}lll@{}}
           \toprule
           ID & Person  & Age \\ \midrule
@@ -369,7 +370,7 @@
     \end{column}
     \begin{column}{0.5\textwidth}
       \begin{table}[]
-        \footnotesize
+        \tiny
         \begin{tabular}{@{}ll@{}}
           \toprule
           ID & Desert Type       \\ \midrule
@@ -384,7 +385,7 @@
   \begin{columns}[T]
     \begin{column}{0.3\textwidth}
       \begin{table}[]
-        \footnotesize
+        \tiny
         \begin{tabular}{@{}llp{5em}@{}}
           \toprule
           ID & Dessert      & Dessert Type ID \\ \midrule
@@ -398,7 +399,7 @@
     \end{column}
     \begin{column}{0.5\textwidth}
       \begin{table}[]
-        \footnotesize
+        \tiny
         \begin{tabular}{@{}ll@{}}
           \toprule
           Person ID & Dessert ID \\ \midrule
@@ -779,9 +780,17 @@ INSERT INTO desserts (dessert_name, dessert_type_id) VALUES
 
 \begin{frame}[fragile]
   \frametitle{Baseball example}
-
   I have a rudimentary database of 2016 MLB info: just games, teams, and
-  players. Let's figure out the following:
+  players.
+
+  \begin{center}
+    \includegraphics[height=0.7\textheight]{diagram.png}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Baseball example}
+  Let's figure out the following:
 
   \begin{enumerate}
     \item What player has the id 'dillp101'?\label{pickles}
@@ -789,6 +798,8 @@ INSERT INTO desserts (dessert_name, dessert_type_id) VALUES
     \item How many players played in 2016?\label{num_players}
     \item How many games did Anthony Rizzo play in 2016?\label{rizzo}
     \item What is the commonest first name in MLB history?\label{common}
+    \item List all players in the database and include all their 2016
+          teams.\label{all_teams}
     \item What player played for the most teams (choose only one if it's a
           tie), and what teams were they?\label{most_teams}
     \item From those players who played at least 10 total games in 2016, what
@@ -837,6 +848,18 @@ FROM players
 GROUP BY first
 ORDER BY 1 DESC
 LIMIT 1;
+  \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Baseball example, answer \ref{common}}
+  \begin{lstlisting}
+SELECT p.first, p.last, t.name
+FROM players_teams pt
+INNER JOIN teams t
+        ON pt.team_id = t.id
+FULL OUTER JOIN players p
+             ON pt.player_id = p.id;
   \end{lstlisting}
 \end{frame}
 
